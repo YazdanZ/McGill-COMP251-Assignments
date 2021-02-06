@@ -54,8 +54,23 @@ public class Open_Addressing {
      * Inserts key k into hash table. Returns the number of collisions encountered
      */
     public int insertKey ( int key ) {
-        //TODO : implement this and change the return statement.
-        return -1;
+        int i = 0;
+        int zeroHash = probe ( key, 0 );
+        boolean inserted = false;
+        while (!inserted){
+            int index = probe ( key, i );
+            // Not possible to insert key
+            if(index == zeroHash && i != 0)
+                break;
+            // Verify if slot is empty (represented by negative ints)
+            if(this.Table[index] < 0){
+                inserted = true;
+                this.Table[index] = key;
+            }else {
+                i++;
+            }
+        }
+        return i;
     }
 
     /**

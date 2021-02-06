@@ -56,9 +56,14 @@ public class Chaining {
      * Inserts key k into hash table. Returns the number of collisions encountered
      */
     public int insertKey ( int key ) {
-        //TODO: implement this and change the return statement
-        return -1;
+        // get the index to insert from the hash function
+        int index = chain ( key );
+        ArrayList<Integer> list = this.Table.get ( index );
 
+        // we consider the number of other keys in the same bin at insertion as the number collisions
+        int collisions = list.size ();
+        list.add ( key );
+        return collisions;
     }
 
 

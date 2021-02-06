@@ -6,8 +6,8 @@ public class MiniTester {
 
     public static void main ( String[] args ) {
         MiniTester m = new MiniTester ();
-        m.testHashFunctions ();
-//		m.testInsertKeyProbe();
+//      m.testHashFunctions ();
+		m.testInsertKeyProbe();
 //		m.testRemoveKey();
 //		m.testInsertKeyChain();
 //        m.testSilence();
@@ -38,8 +38,10 @@ public class MiniTester {
 
         long startTime = System.nanoTime ();
         // Insert integers from 1 to 32 into table using probe
-        for (int i = 1; i < oa.m + 1; i++)
-            oa.insertKey ( i );
+        for (int i = 1; i < oa.m + 1; i++){
+            int coll = oa.insertKey ( i );
+            System.out.println (i + "-" + oa.probe ( i, coll ) + "-" + coll);
+        }
         long endTime = System.nanoTime ();
         long duration = (endTime - startTime);
 
@@ -67,11 +69,12 @@ public class MiniTester {
     private void testInsertKeyChain () {
         System.out.println ( "- - - - - - - - - - - - - - - - - - - -\n" );
         System.out.println ( "Table before insertion: \n" + c.Table + "\n" );
-
         long startTime = System.nanoTime ();
         // Insert integers from 1 to 32 into table using chain
-        for (int i = 1; i < c.m + 1; i++)
-            c.insertKey ( i );
+        for (int i = 1; i < c.m + 1; i++){
+            int coll = c.insertKey ( i );
+            System.out.println (i + " - " + c.chain ( i ) + " - Coll = " + coll);
+        }
         long endTime = System.nanoTime ();
         long duration = (endTime - startTime);
 
