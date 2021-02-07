@@ -88,8 +88,26 @@ public class Open_Addressing {
      * Inserts key k into hash table. Returns the number of collisions encountered
      */
     public int removeKey ( int key ) {
-        //TODO: implement this and change the return statement
-
-        return -1;
+        int i = 0;
+        boolean deleted = false;
+        int zeroHash = probe ( key, i );
+        while(!deleted){
+            int index = probe ( key, i );
+            // visited all slots
+            if (index == zeroHash && i != 0)
+                break;
+            // key doesn't exist
+            if (this.Table[index] == -1)
+                break;
+            if (this.Table[index] == key){
+                deleted = true;
+                // -2 is a tombstone for deleted keys
+                this.Table[index] = -2;
+            }
+            else if (this.Table[index] == -2){
+                i ++;
+            }
+        }
+        return i;
     }
 }
