@@ -104,7 +104,7 @@ public class Open_Addressing {
                 // -2 is a tombstone for deleted keys
                 this.Table[index] = -2;
             }
-            else if (this.Table[index] == -2){
+            else{
                 i ++;
             }
         }
