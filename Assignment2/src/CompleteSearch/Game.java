@@ -77,13 +77,46 @@ public class Game {
 		}
 
 	}
-	
+
+    /**
+     * Solve sudoku using recursive backtracking
+     * @return
+     */
 	public int[][] solver() {
-		//To Do => Please start coding your solution here
+	    solvePuzzle ( 0, 0 );
+
 		return sudoku.getValues();
 	}
 
-	
+	private boolean solvePuzzle(int row, int col) {
+
+	    // go to the next row if all columns of a row have been visited
+	    if (col == this.sudoku.num_columns){
+	        col = 0;
+	        ++row;
+        }
+
+	    // check if the sudoku has been fully solved
+	    if (row == this.sudoku.num_rows)
+	        return true;
+
+	    // check to see if the row, col cell is empty
+        // (-1 represents an empty cell)
+        if (this.sudoku.getValue ( row, col ) == -1){
+            // go to next cell
+            solvePuzzle ( row, col + 1 )
+        }
+    }
+
+    /**
+     * Check if a board configutation is valid
+     * @return validity of the board configuration
+     */
+    private boolean isValid() {
+
+	    return true;
+    }
+
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		int rows = sc.nextInt();
