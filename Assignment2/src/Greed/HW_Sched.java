@@ -23,8 +23,6 @@ public class HW_Sched {
 	 * that will be done at time i.
 	 */
 	public int[] SelectAssignments() {
-		//TODO Implement this
-		
 		//Sort assignments
 		//Order will depend on how compare function is implemented
 		Collections.sort(Assignments, new Assignment());
@@ -36,8 +34,25 @@ public class HW_Sched {
 		for (int i=0; i < homeworkPlan.length; ++i) {
 			homeworkPlan[i] = -1;
 		}
-	
-		
+
+		int filledSlots = 0;
+
+		for (Assignment assignment : Assignments) {
+			// start by filling slots closest to the assignment deadline
+			for (int slotIndex = assignment.deadline - 1; slotIndex >= 0; slotIndex--) {
+				// check if slot is empty before inserting
+				if (homeworkPlan[slotIndex] == -1) {
+					// fill the slot with the assignment
+					homeworkPlan[slotIndex] = assignment.number;
+					filledSlots ++;
+					break; // to and repeat for the rest of the assignments
+				}
+			}
+			// avoid re-computation if there are no empty slots
+			if (filledSlots == lastDeadline)
+				break;
+		}
+
 		return homeworkPlan;
 	}
 }

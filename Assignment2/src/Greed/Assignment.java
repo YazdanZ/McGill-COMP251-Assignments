@@ -19,9 +19,12 @@ class Assignment implements Comparator<Assignment>{
 	 */
 	@Override
 	public int compare(Assignment a1, Assignment a2) {
-		// TODO Implement this
-		
-		
+		if (a1.weight > a2.weight)
+			return -1;
+		if (a1.weight < a2.weight)
+			return 1;
+
+		// If both have the same weights
 		return 0;
 	}
 }

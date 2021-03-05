@@ -1,3 +1,5 @@
+package Greed;
+
 import java.util.Arrays;
 
 public class GreedyTester {
