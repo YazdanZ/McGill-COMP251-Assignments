@@ -150,6 +150,12 @@ public class Game {
 	    return true;
     }
 
+	/**
+	 * get a list of values of neighbors cells
+	 * @param row
+	 * @param col
+	 * @return list of values of neighbors cells
+	 */
     private ArrayList<Integer> getNeighborValues(int row, int col){
     	ArrayList<Integer> neighbors = new ArrayList<> ();
 
@@ -166,10 +172,11 @@ public class Game {
     	return  neighbors;
 	}
 
+	
 	private int getCellCheckBounds(int row, int col) {
     	if (isInBounds(row, col))
     		return this.sudoku.getValue ( row, col );
-    	return -2;
+    	return 0;
 	}
 
     private boolean isInBounds(int row, int col) {
