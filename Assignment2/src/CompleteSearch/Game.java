@@ -4,13 +4,13 @@ import java.io.*;
 
 
 public class Game {
-	
+
 	Board sudoku;
-	
+
 	public class Cell{
 		private int row = 0;
 		private int column = 0;
-		
+
 		public Cell(int row, int column) {
 			this.row = row;
 			this.column = column;
@@ -22,7 +22,7 @@ public class Game {
 			return column;
 		}
 	}
-	
+
 	public class Region{
 		private Cell[] matrix;
 		private int num_cells;
@@ -36,16 +36,16 @@ public class Game {
 		public void setCell(int pos, Cell element){
 			matrix[pos] = element;
 		}
-		
+
 	}
-	
+
 	public class Board{
 		private int[][] board_values;
 		private Region[] board_regions;
 		private int num_rows;
 		private int num_columns;
 		private int num_regions;
-		
+
 		public Board(int num_rows,int num_columns, int num_regions){
 			this.board_values = new int[num_rows][num_columns];
 			this.board_regions = new Region[num_regions];
@@ -53,7 +53,7 @@ public class Game {
 			this.num_columns = num_columns;
 			this.num_regions = num_regions;
 		}
-		
+
 		public int[][] getValues(){
 			return board_values;
 		}
@@ -71,7 +71,7 @@ public class Game {
 		}
 		public void setRegion(int index, Region initial_region) {
 			board_regions[index] = initial_region;
-		}	
+		}
 		public void setValues(int[][] values) {
 			board_values = values;
 		}
@@ -83,39 +83,102 @@ public class Game {
      * @return
      */
 	public int[][] solver() {
-	    solvePuzzle ( 0, 0 );
-
+	    solvePuzzle (0, 0);
 		return sudoku.getValues();
 	}
 
-	private boolean solvePuzzle(int row, int col) {
+	private boolean solvePuzzle(int regionIndex, int cellIndex) {
 
-	    // go to the next row if all columns of a row have been visited
-	    if (col == this.sudoku.num_columns){
-	        col = 0;
-	        ++row;
-        }
+		// go to the next region if all cells of a region have been visited
+		if (cellIndex == this.sudoku.getRegion ( regionIndex ).num_cells) {
+			regionIndex++;
+			cellIndex = 0;
+		}
 
-	    // check if the sudoku has been fully solved
-	    if (row == this.sudoku.num_rows)
-	        return true;
+		// we're done if we visit all the regions
+		// puzzle solved!
+		if (regionIndex == this.sudoku.num_regions )
+			return true;
 
-	    // check to see if the row, col cell is empty
-        // (-1 represents an empty cell)
-        if (this.sudoku.getValue ( row, col ) == -1){
-            // go to next cell
-            solvePuzzle ( row, col + 1 )
-        }
+		Region currentRegion = this.sudoku.getRegion ( regionIndex );
+		Cell currentCell = currentRegion.getCells ()[cellIndex];
+
+		int row = currentCell.getRow ();
+		int col = currentCell.getColumn ();
+
+		// go to next cell if cell is not empty
+		// empty cells represented by -1
+		if (this.sudoku.getValues ()[row][col] != -1)
+			return solvePuzzle ( regionIndex, cellIndex + 1 );
+
+		// each region contains the number 1 to num_cells
+		for (int guess = 1; guess <= currentRegion.num_cells; guess++) {
+			if (isValid (row, col, currentRegion, guess)){
+				this.sudoku.setValue ( row, col, guess );
+
+				// check condition of the next cell
+				if (solvePuzzle ( regionIndex, cellIndex + 1 )){
+					return true;
+				}
+			}
+			// the guess was wrong
+			this.sudoku.setValue ( row, col, -1);
+		}
+
+		// can't solve the given puzzle
+		return false;
     }
 
     /**
-     * Check if a board configutation is valid
+     * Check if a board configuration is valid
      * @return validity of the board configuration
      */
-    private boolean isValid() {
+    private boolean isValid(int row, int col, Region region, int guess) {
+		ArrayList<Integer> regionValues = new ArrayList<> ();
+		for (Cell cell : region.matrix) {
+			regionValues.add (this.sudoku.getValue (cell.getRow (), cell.getColumn ()));
+		}
+
+		// check if the guess already exists in the region
+		if (regionValues.contains ( guess ))
+			return false;
+
+		// check if adjacent cells contain the guess
+		if (getNeighborValues ( row, col ).contains ( guess ))
+			return false;
 
 	    return true;
     }
+
+    private ArrayList<Integer> getNeighborValues(int row, int col){
+    	ArrayList<Integer> neighbors = new ArrayList<> ();
+
+    	// add all the neighbors
+    	neighbors.add ( getCellCheckBounds ( row - 1, col - 1 ) );
+    	neighbors.add ( getCellCheckBounds ( row - 1, col ) );
+    	neighbors.add ( getCellCheckBounds ( row - 1, col +1 ) );
+    	neighbors.add ( getCellCheckBounds ( row, col - 1 ) );
+    	neighbors.add ( getCellCheckBounds ( row, col + 1 ) );
+    	neighbors.add ( getCellCheckBounds ( row + 1, col - 1) );
+    	neighbors.add ( getCellCheckBounds ( row + 1, col) );
+    	neighbors.add ( getCellCheckBounds ( row + 1, col + 1) );
+
+    	return  neighbors;
+	}
+
+	private int getCellCheckBounds(int row, int col) {
+    	if (isInBounds(row, col))
+    		return this.sudoku.getValue ( row, col );
+    	return -2;
+	}
+
+    private boolean isInBounds(int row, int col) {
+    	if (row >= this.sudoku.num_rows || row < 0)
+    		return false;
+    	if (col >= this.sudoku.num_columns || col < 0)
+    		return false;
+    	return true;
+	}
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
@@ -134,7 +197,7 @@ public class Game {
 					}catch(Exception e) {
 						System.out.println("Ups, something went wrong");
 					}
-				}	
+				}
 			}
 		}
 		int regions = sc.nextInt();
@@ -164,7 +227,7 @@ public class Game {
 			System.out.println();
 		}
 	}
-	
+
 
 
 }
