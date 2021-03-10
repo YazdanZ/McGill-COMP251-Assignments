@@ -26,36 +26,43 @@ public class Midterm {
 
 	public static int lost_marks(int[] penalization) {
 		int n = penalization.length;
+
 		dp_table = new int[n - 1][n]; // rows = jumps, cols = seats
+		for (int i = 0; i < n - 1; i++)
+			for (int j = 0; j < n; j++)
+				dp_table[i][j] = -1;
 
 		ArrayList<Integer> scores = new ArrayList<> ();
 		for (int lastJump = n - 1; lastJump > 0; lastJump--) {
-			int score = recursion ( n - 1, lastJump, penalization );
+			int score = recursion ( n - 1, lastJump, penalization, lastJump );
 			scores.add ( score );
 		}
 		return Collections.min ( scores );
 	}
 
-	private static int recursion ( int seat, int jump, int[] penalization) {
+	private static int recursion ( int seat, int jump, int[] penalization, int initialJump) {
 		// if the seat is out of bounds
 		// return a negative penalization to distinguish between a valid jump and an invalid one
 		if (seat >= penalization.length || seat < 0)
 			return 100000;
 
-		// impossible paths
-		if (seat != 0 && jump == 0)
-			return 100000;
+			// impossible paths
+		else if (seat != 0 && jump == 0)
+			dp_table[initialJump - 1][seat] = 100000;
 
-		// reaching the starting point
-		if (seat == 0 && jump == 0)
+			// reaching the starting point
+		else if (seat == 0 && jump == 0)
 			return 0;
 
-		int pen = penalization[seat];
+		else {
+			int pen = penalization[seat];
 
-		int forwardScore = recursion ( seat - jump, jump - 1, penalization );
-		int backwardScore = recursion ( seat + jump, jump, penalization );
+			int forwardScore = recursion ( seat - jump, jump - 1, penalization, initialJump );
+			int backwardScore = recursion ( seat + jump, jump, penalization, initialJump );
 
-		return Math.min ( forwardScore, backwardScore ) + pen;
+			dp_table[initialJump - 1][seat] = Math.min ( forwardScore, backwardScore ) + pen;
+		}
+		return dp_table[initialJump - 1][seat];
 	}
 
 }
