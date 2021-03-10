@@ -34,7 +34,7 @@ public class Midterm {
 
 		ArrayList<Integer> scores = new ArrayList<> ();
 		for (int lastJump = n - 1; lastJump > 0; lastJump--) {
-			int score = recursion ( n - 1, lastJump, penalization, lastJump );
+			int score = recursion ( n - 1, lastJump, penalization, lastJump - 1 );
 			scores.add ( score );
 		}
 		return Collections.min ( scores );
@@ -43,26 +43,44 @@ public class Midterm {
 	private static int recursion ( int seat, int jump, int[] penalization, int initialJump) {
 		// if the seat is out of bounds
 		// return a negative penalization to distinguish between a valid jump and an invalid one
-		if (seat >= penalization.length || seat < 0)
+		if (outOfBound ( seat, penalization ))
 			return 100000;
 
 			// impossible paths
 		else if (seat != 0 && jump == 0)
-			dp_table[initialJump - 1][seat] = 100000;
+			dp_table[initialJump][seat] = 100000;
 
 			// reaching the starting point
 		else if (seat == 0 && jump == 0)
-			return 0;
+			dp_table[initialJump][seat] = 0;
 
 		else {
 			int pen = penalization[seat];
+			int forwardScore, backwardScore;
 
-			int forwardScore = recursion ( seat - jump, jump - 1, penalization, initialJump );
-			int backwardScore = recursion ( seat + jump, jump, penalization, initialJump );
+			if (outOfBound ( seat - jump, penalization ))
+				forwardScore = 100000;
+			else {
+				if (dp_table[initialJump][seat - jump] != -1)
+					forwardScore = dp_table[initialJump][seat - jump];
+				else
+					forwardScore = recursion ( seat - jump, jump - 1, penalization, initialJump );
+			}
+			if (outOfBound ( seat + jump, penalization ))
+				backwardScore = 100000;
+			else {
+				if (dp_table[initialJump][seat + jump] != -1)
+					backwardScore = dp_table[initialJump][seat + jump];
+				else
+					backwardScore = recursion ( seat + jump, jump, penalization, initialJump );
+			}
 
-			dp_table[initialJump - 1][seat] = Math.min ( forwardScore, backwardScore ) + pen;
+			dp_table[initialJump][seat] = Math.min ( forwardScore, backwardScore ) + pen;
 		}
-		return dp_table[initialJump - 1][seat];
+		return dp_table[initialJump][seat];
 	}
 
+	private static boolean outOfBound ( int seat, int[] penalization) {
+		return seat >= penalization.length || seat < 0;
+	}
 }
