@@ -27,33 +27,35 @@ public class Midterm {
 	public static int lost_marks(int[] penalization) {
 		int n = penalization.length;
 
-		dp_table = new int[n - 1][n]; // rows = jumps, cols = seats
-		for (int i = 0; i < n - 1; i++)
+		dp_table = new int[n][n]; // rows = jumps, cols = seats
+		for (int i = 0; i < n; i++)
 			for (int j = 0; j < n; j++)
 				dp_table[i][j] = Integer.MAX_VALUE;
 
 		ArrayList<Integer> scores = new ArrayList<> ();
 		for (int lastJump = n - 1; lastJump > 0; lastJump--) {
-			int score = recursion ( n - 1, lastJump, penalization, lastJump - 1 );
+			int score = recurseLostMarks ( n - 1, lastJump, penalization, lastJump - 1 );
 			scores.add ( score );
+			for (int i = 0; i < n; i++)
+				for (int j = 0; j < n; j++)
+					dp_table[i][j] = Integer.MAX_VALUE;
 		}
 		return Collections.min ( scores );
 	}
 
-	private static int recursion ( int seat, int jump, int[] penalization, int initialJump) {
+	private static int recurseLostMarks ( int seat, int jump, int[] penalization, int initialJump) {
 		// if the seat is out of bounds
 		// return a negative penalization to distinguish between a valid jump and an invalid one
-
 		if (outOfBound ( seat, penalization ))
 			return Integer.MAX_VALUE;
 
 			// impossible path
 		else if (seat != 0 && jump == 0)
-			dp_table[initialJump][seat] = Integer.MAX_VALUE;
+			dp_table[jump][seat] = Integer.MAX_VALUE;
 
 			// reaching starting point
 		else if (seat == 0 && jump == 0)
-			dp_table[initialJump][seat] = 0;
+			dp_table[jump][seat] = 0;
 
 		else {
 			int pen = penalization[seat];
@@ -62,25 +64,25 @@ public class Midterm {
 			if (outOfBound ( seat - jump, penalization ))
 				forwardScore = Integer.MAX_VALUE;
 			else {
-				if (dp_table[initialJump][seat - jump] != Integer.MAX_VALUE )
-					forwardScore = dp_table[initialJump][seat - jump];
+				if (dp_table[jump - 1][seat - jump] != Integer.MAX_VALUE )
+					forwardScore = dp_table[jump - 1][seat - jump];
 				else
-					forwardScore = recursion ( seat - jump, jump - 1, penalization, initialJump );
+					forwardScore = recurseLostMarks ( seat - jump, jump - 1, penalization, initialJump );
 			}
 			if (outOfBound ( seat + jump, penalization ))
 				backwardScore = Integer.MAX_VALUE;
 			else {
-				if (dp_table[initialJump][seat + jump] != Integer.MAX_VALUE)
-					backwardScore = dp_table[initialJump][seat + jump];
+				if (dp_table[jump][seat + jump] != Integer.MAX_VALUE)
+					backwardScore = dp_table[jump][seat + jump];
 				else
-					backwardScore = recursion ( seat + jump, jump, penalization, initialJump );
+					backwardScore = recurseLostMarks ( seat + jump, jump, penalization, initialJump );
 			}
 
 			if (forwardScore != Integer.MAX_VALUE || backwardScore != Integer.MAX_VALUE )
-				dp_table[initialJump][seat] = Math.min ( forwardScore, backwardScore ) + pen;
-			else dp_table[initialJump][seat] = Integer.MAX_VALUE;
+				dp_table[jump][seat] = Math.min ( forwardScore, backwardScore ) + pen;
+			else dp_table[jump][seat] = Integer.MAX_VALUE;
 		}
-		return dp_table[initialJump][seat];
+		return dp_table[jump][seat];
 	}
 
 	private static boolean outOfBound ( int seat, int[] penalization) {
