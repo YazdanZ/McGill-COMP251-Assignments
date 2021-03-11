@@ -30,7 +30,7 @@ public class Midterm {
 		dp_table = new int[n - 1][n]; // rows = jumps, cols = seats
 		for (int i = 0; i < n - 1; i++)
 			for (int j = 0; j < n; j++)
-				dp_table[i][j] = -1;
+				dp_table[i][j] = Integer.MAX_VALUE;
 
 		ArrayList<Integer> scores = new ArrayList<> ();
 		for (int lastJump = n - 1; lastJump > 0; lastJump--) {
@@ -43,14 +43,15 @@ public class Midterm {
 	private static int recursion ( int seat, int jump, int[] penalization, int initialJump) {
 		// if the seat is out of bounds
 		// return a negative penalization to distinguish between a valid jump and an invalid one
+
 		if (outOfBound ( seat, penalization ))
-			return 100000;
+			return Integer.MAX_VALUE;
 
-			// impossible paths
+			// impossible path
 		else if (seat != 0 && jump == 0)
-			dp_table[initialJump][seat] = 100000;
+			dp_table[initialJump][seat] = Integer.MAX_VALUE;
 
-			// reaching the starting point
+			// reaching starting point
 		else if (seat == 0 && jump == 0)
 			dp_table[initialJump][seat] = 0;
 
@@ -59,23 +60,25 @@ public class Midterm {
 			int forwardScore, backwardScore;
 
 			if (outOfBound ( seat - jump, penalization ))
-				forwardScore = 100000;
+				forwardScore = Integer.MAX_VALUE;
 			else {
-				if (dp_table[initialJump][seat - jump] != -1)
+				if (dp_table[initialJump][seat - jump] != Integer.MAX_VALUE )
 					forwardScore = dp_table[initialJump][seat - jump];
 				else
 					forwardScore = recursion ( seat - jump, jump - 1, penalization, initialJump );
 			}
 			if (outOfBound ( seat + jump, penalization ))
-				backwardScore = 100000;
+				backwardScore = Integer.MAX_VALUE;
 			else {
-				if (dp_table[initialJump][seat + jump] != -1)
+				if (dp_table[initialJump][seat + jump] != Integer.MAX_VALUE)
 					backwardScore = dp_table[initialJump][seat + jump];
 				else
 					backwardScore = recursion ( seat + jump, jump, penalization, initialJump );
 			}
 
-			dp_table[initialJump][seat] = Math.min ( forwardScore, backwardScore ) + pen;
+			if (forwardScore != Integer.MAX_VALUE || backwardScore != Integer.MAX_VALUE )
+				dp_table[initialJump][seat] = Math.min ( forwardScore, backwardScore ) + pen;
+			else dp_table[initialJump][seat] = Integer.MAX_VALUE;
 		}
 		return dp_table[initialJump][seat];
 	}
