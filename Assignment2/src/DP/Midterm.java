@@ -26,33 +26,20 @@ public class Midterm {
 
 	public static int lost_marks ( int[] penalization ) {
 		int n = penalization.length;
-
 		dp_table = new int[n][n]; // rows = jumps, cols = seats
 		ArrayList<Integer> scores = new ArrayList<> ();
 		for (int lastJump = n - 1; lastJump >= 1; lastJump--) {
-			clearArray ();
+			for (int i  = 0; i < lastJump; i++)
+				Arrays.fill ( dp_table[i], -1 );
 			int score = recurseLostMarks ( n - 1, lastJump, penalization );
 			scores.add ( score );
 		}
 		return Collections.min ( scores );
 	}
 
-	private static void clearArray () {
-		for (int[] row : dp_table)
-			Arrays.fill ( row, -1 );
-	}
-
 	private static int recurseLostMarks ( int seat, int jump, int[] penalization ) {
-		// if the seat is out of bounds
-		// return a negative penalization to distinguish between a valid jump and an invalid one
-		if (outOfBound ( seat, penalization ))
-			return Integer.MAX_VALUE;
-
-//		else if (dp_table[jump][seat] != -1)
-//			return dp_table[jump][seat];
-
-			// impossible path
-		else if (seat != 0 && jump == 0)
+		// impossible path
+		if (seat != 0 && jump == 0)
 			dp_table[jump][seat] = Integer.MAX_VALUE;
 
 			// reaching starting point
