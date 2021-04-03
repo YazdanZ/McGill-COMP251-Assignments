@@ -8,11 +8,6 @@ public class Honors {
 		// moves array to keep track of minimum distances to each cell
 		int[][] moves = new int[board.length][board[0].length];
 
-		// set initial moves to a maximum
-		for (int[] row : moves) {
-			Arrays.fill ( row, Integer.MAX_VALUE );
-		}
-
 		// store the indexes of the nodes and add the source node (top left corner)
 		LinkedList<int[]> nextNodes = new LinkedList<> ();
 		moves[0][0] = 0; //0 moves to the source node
@@ -29,7 +24,7 @@ public class Honors {
 				int adjRow = adjCell[0];
 				int adjCol = adjCell[1];
 
-				if (moves[adjRow][adjCol] > moves[currRow][currCol] + 1) {
+				if (moves[adjRow][adjCol] == 0 || moves[adjRow][adjCol] > moves[currRow][currCol] + 1) {
 					moves[adjRow][adjCol] = moves[currRow][currCol] + 1;
 					nextNodes.add ( new int[] {adjRow, adjCol} );
 				}
@@ -37,7 +32,7 @@ public class Honors {
 		}
 		// if the cost is MAX_VALUE, node can't be reached
 		int cost = moves[board.length - 1][board[0].length -1];
-		if (cost == Integer.MAX_VALUE)
+		if (cost == 0)
 			return -1;
 		return cost;
 	}
