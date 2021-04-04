@@ -1,9 +1,8 @@
-package Q3;
-
 import java.util.*;
 import java.io.File;
 
 public class FordFulkerson {
+	private static boolean foundPath = false;
 
 	public static ArrayList<Integer> pathDFS(Integer source, Integer destination, WGraph graph){
 		ArrayList<Integer> path = new ArrayList<Integer>();
@@ -12,30 +11,40 @@ public class FordFulkerson {
 		HashMap<Integer, Boolean> visited = new HashMap<> ();
 		ArrayList<Edge> edges = graph.getEdges ();
 
-		if (findPath ( source, destination, edges, path, visited ))
+		path.add ( source );
+		findPath ( source, destination, edges, path, visited );
+
+		// if the path contains only the source node, no path exists
+		if (path.size () > 1)
 			return path;
-		else return new ArrayList<Integer> ();
+		else return new ArrayList<> ();
 	}
 
-	private static boolean findPath(Integer source, Integer destination, ArrayList<Edge> edges, ArrayList<Integer> path, HashMap<Integer, Boolean> visited) {
+	private static void findPath(Integer source, Integer destination, ArrayList<Edge> edges, ArrayList<Integer> path, HashMap<Integer, Boolean> visited) {
+
 		// set current node to discovered
 		visited.put ( source, true );
-		path.add ( source );
 
-		if (source.equals ( destination ))
-			return true;
+		if (source.equals ( destination )) {
+			// a path is found
+			visited.put ( source, false );
+			foundPath = true;
+			return;
+		}
 
 		for (Edge edge : edges) {
 			if (edge.nodes[0] != source)
 				continue;
-			if (!visited.containsKey ( edge.nodes[1] )) {
-				if (findPath ( edge.nodes[1], destination, edges, path, visited))
-					return true;
-			}
+			if (!visited.containsKey ( edge.nodes[1] ) || !visited.get ( edge.nodes[1] )) {
+				path.add ( edge.nodes[1] );
+				findPath ( edge.nodes[1], destination, edges, path, visited );
 
+				// get out of all recursive calls as soon as a path is found
+				if (foundPath) return;
+				path.remove ( Integer.valueOf ( edge.nodes[1] ) );
+			}
 		}
-		path.remove ( path.size () - 1 );
-		return false;
+		visited.put ( source, false );
 	}
 
 
@@ -55,7 +64,6 @@ public class FordFulkerson {
 		File f = new File(file);
 		WGraph g = new WGraph(file);
 	    System.out.println(fordfulkerson(g));
-		 System.out.println(pathDFS (g.getSource (), g.getDestination (), g));
 	 }
 }
 
