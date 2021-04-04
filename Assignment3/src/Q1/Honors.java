@@ -9,12 +9,11 @@ public class Honors {
 		int[][] moves = new int[board.length][board[0].length];
 
 		// store the indexes of the nodes and add the source node (top left corner)
-		LinkedList<int[]> nextNodes = new LinkedList<> ();
-		moves[0][0] = 0; //0 moves to the source node
+		Queue<int[]> nextNodes = new LinkedList<> ();
 		nextNodes.add ( new int[] {0, 0} );
 
 		while (!nextNodes.isEmpty ()) {
-			int[] currentNode = nextNodes.poll ();
+			int[] currentNode = nextNodes.remove ();
 			int currRow = currentNode[0];
 			int currCol = currentNode[1];
 
