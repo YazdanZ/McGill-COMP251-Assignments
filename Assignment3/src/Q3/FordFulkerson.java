@@ -1,5 +1,3 @@
-package Q3;
-
 import java.util.*;
 import java.io.File;
 
@@ -12,19 +10,19 @@ public class FordFulkerson {
 		// pass the edges to the recursive function
 		ArrayList<Edge> edges = graph.getEdges ();
 
-		ArrayList<Integer> validPath = findPath ( source, destination, edges, visited );
+		Stack<Integer> validPath = findPath ( source, destination, edges, visited );
 
 		// is size of the path is 0 or 1, there are no valid paths
 		if (validPath.size () > 1)
-			return validPath;
+			return new ArrayList<> (validPath);
 		return new ArrayList<> ();
 	}
 
-	private static ArrayList<Integer> findPath ( Integer source, Integer destination, ArrayList<Edge> edges, HashMap<Integer, Boolean> visited ) {
-		ArrayList<Integer> path = new ArrayList<> ();
+	private static Stack<Integer> findPath ( Integer source, Integer destination, ArrayList<Edge> edges, HashMap<Integer, Boolean> visited ) {
+		Stack<Integer> path = new Stack<> ();
 
-		// add current node
-		path.add ( source );
+		// push current node
+		path.push ( source );
 
 		// set current node to discovered
 		visited.put ( source, true );
@@ -46,7 +44,7 @@ public class FordFulkerson {
 			if (!visited.containsKey ( v ) || !visited.get ( v )) {
 
 				// solve sub problem recursively
-				ArrayList<Integer> subPath = findPath ( v, destination, edges, visited );
+				Stack<Integer> subPath = findPath ( v, destination, edges, visited );
 
 				if (!subPath.isEmpty () && subPath.get ( subPath.size () - 1 ).equals ( destination )) {
 					path.addAll ( subPath );
@@ -54,8 +52,8 @@ public class FordFulkerson {
 				}
 			}
 		}
-		// return empty list if no path exists
-		return new ArrayList<> ();
+		path.pop ();
+		return path;
 	}
 
 
