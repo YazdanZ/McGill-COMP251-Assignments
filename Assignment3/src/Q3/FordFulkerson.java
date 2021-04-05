@@ -4,16 +4,15 @@ import java.util.*;
 import java.io.File;
 
 public class FordFulkerson {
-	private static boolean foundPath = false;
 
 	public static ArrayList<Integer> pathDFS(Integer source, Integer destination, WGraph graph){
-		// keep track of visited nodes using this hashmap
+		// keep track of visited nodes using a hashmap
 		HashMap<Integer, Boolean> visited = new HashMap<> ();
 
 		// pass the edges to the recursive function
 		ArrayList<Edge> edges = graph.getEdges ();
 
-		ArrayList<Integer> validPath = findPath ( source, destination, edges, new ArrayList<> (), visited );
+		ArrayList<Integer> validPath = findPath ( source, destination, edges, visited );
 
 		// is size of the path is 0 or 1, there are no valid paths
 		if (validPath.size () > 1)
@@ -21,29 +20,41 @@ public class FordFulkerson {
 		return new ArrayList<> ();
 	}
 
-	private static ArrayList<Integer> findPath(Integer source, Integer destination, ArrayList<Edge> edges, ArrayList<Integer> path, HashMap<Integer, Boolean> visited) {
-		path = new ArrayList<> ();
+	private static ArrayList<Integer> findPath ( Integer source, Integer destination, ArrayList<Edge> edges, HashMap<Integer, Boolean> visited ) {
+		ArrayList<Integer> path = new ArrayList<> ();
+
+		// add current node
 		path.add ( source );
 
 		// set current node to discovered
 		visited.put ( source, true );
 
+		// stop if we reach destination (base case)
 		if (source.equals ( destination ))
 			return path;
 
 		for (Edge edge : edges) {
-			if (edge.nodes[0] != source || edge.weight <= 0)
+			int u = edge.nodes[0]; // parent node
+			int v = edge.nodes[1]; // child node (new source node)
+
+			/* since we are not provided an adj list, we search
+			 through all edges to find edges of the source node */
+			if (u != source || edge.weight <= 0)
 				continue;
 
-			if (!visited.containsKey ( edge.nodes[1] ) || !visited.get ( edge.nodes[1] )) {
-				ArrayList<Integer> smallPath = findPath ( edge.nodes[1], destination, edges, path, visited );
-				if (!smallPath.isEmpty () && smallPath.contains ( destination )) {
-					path.addAll ( smallPath );
+			// check is node has been previously discovered
+			if (!visited.containsKey ( v ) || !visited.get ( v )) {
+
+				// solve sub problem recursively
+				ArrayList<Integer> subPath = findPath ( v, destination, edges, visited );
+
+				if (!subPath.isEmpty () && subPath.get ( subPath.size () - 1 ).equals ( destination )) {
+					path.addAll ( subPath );
+					return path;
 				}
 			}
-			if (path.contains ( destination ))
-				return path;
 		}
+		// return empty list if no path exists
 		return new ArrayList<> ();
 	}
 
