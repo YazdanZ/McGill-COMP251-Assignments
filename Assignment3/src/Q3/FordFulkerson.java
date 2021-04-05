@@ -69,11 +69,8 @@ public class FordFulkerson {
 		ArrayList<Integer> augmentingPath = pathDFS ( graph.getSource (), graph.getDestination (), residualGraph);
 
 		// flow is 0 if source is destination or if no path exists
-		if (augmentingPath.isEmpty () || graph.getSource () == graph.getDestination ())
-			return answer ( maxFlow, graph );
-
 		// while augmenting path exists
-		while (!augmentingPath.isEmpty ()) {
+		while (!augmentingPath.isEmpty () && graph.getSource () != graph.getDestination ()) {
 			// find maximum flow of the path
 			int bottleNeck = getBottleNeckFlow ( residualGraph, augmentingPath );
 			maxFlow += bottleNeck; // update max flow
