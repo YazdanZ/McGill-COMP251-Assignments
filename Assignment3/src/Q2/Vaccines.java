@@ -3,7 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Vaccines {
-	
+
 	public class Country{
 		private int ID;
 		private int vaccine_threshold;
@@ -59,8 +59,53 @@ public class Vaccines {
 	}
 	
 	public int vaccines(Country[] graph){
-		//Computing the exceed in vaccines per country.
-		return -1;
+
+		// all countries all initially immune
+		// vaccine_threshold > vaccine_to_receive
+		int immuneCountries = graph.length;
+
+		boolean[] lockedDown = new boolean[immuneCountries];
+
+		// simulate a shortage of vaccines in the first country (ID = 1)
+		Country firstCountry = graph[0];
+		firstCountry.set_vaccines_to_receive ( firstCountry.get_vaccine_threshold () - 1 );
+		lockedDown[0] = true; // first country goes into lockdown
+		immuneCountries --; // first country no longer immune to COVID
+
+		LinkedList<Integer> queue = new LinkedList<> ();
+		queue.add ( firstCountry.ID );
+
+		while (!queue.isEmpty ()) {
+			int countryID = queue.poll ();
+			Country country = getCountry ( countryID, graph );
+
+			// if the country is not immune the country stops vaccine supply to allie
+			for (int i = 0; i < country.get_num_allies (); i++ ) {
+					int allyID = country.get_allies_ID ( i );
+					Country ally = getCountry ( allyID, graph );
+
+					// deduct vaccine supply cut from ally
+					int suppliedVaccines = country.get_allies_vaccine ( i );
+					ally.set_vaccines_to_receive ( ally.get_vaccines_to_receive () - suppliedVaccines );
+					if (!isCountryImmune ( ally ) && !lockedDown[allyID - 1]) {
+						queue.add ( allyID );
+
+						// if country is no longer immune to COVID country goes into lockdown
+						lockedDown[allyID - 1] = true;
+						immuneCountries --;
+					}
+				}
+		}
+
+		return immuneCountries;
+	}
+
+	private static Country getCountry(int ID, Country[] graph) {
+		return graph[ID - 1];
+	}
+
+	private static boolean isCountryImmune(Country country) {
+		return country.get_vaccines_to_receive () >= country.get_vaccine_threshold ();
 	}
 
 	public void test(String filename) throws FileNotFoundException {
