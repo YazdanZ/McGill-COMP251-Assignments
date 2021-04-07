@@ -9,13 +9,13 @@ public class Honors {
 		int[][] moves = new int[board.length][board[0].length];
 
 		// store the indexes of the nodes and add the source node (top left corner)
-		Queue<int[]> nextNodes = new LinkedList<> ();
-		nextNodes.add ( new int[] {0, 0} );
+		Queue<Integer> nextNodes = new ArrayDeque<> ();
+		nextNodes.add ( 0 );
+		nextNodes.add ( 0 );
 
 		while (!nextNodes.isEmpty ()) {
-			int[] currentNode = nextNodes.remove ();
-			int currRow = currentNode[0];
-			int currCol = currentNode[1];
+			int currRow = nextNodes.poll ();
+			int currCol = nextNodes.poll ();
 
 
 			ArrayList<int[]> adjCells = findAdjCells ( currRow, currCol, board );
@@ -25,33 +25,38 @@ public class Honors {
 
 				if (moves[adjRow][adjCol] == 0 || moves[adjRow][adjCol] > moves[currRow][currCol] + 1) {
 					moves[adjRow][adjCol] = moves[currRow][currCol] + 1;
-					nextNodes.add ( new int[] {adjRow, adjCol} );
+					if (adjRow == board.length - 1 && adjCol == board[0].length - 1 )
+						return moves[adjRow][adjCol];
+					nextNodes.add ( adjRow );
+					nextNodes.add ( adjCol );
 				}
 			}
 		}
-		// if the cost is MAX_VALUE, node can't be reached
-		int cost = moves[board.length - 1][board[0].length -1];
-		if (cost == 0)
-			return -1;
-		return cost;
+		return -1;
 	}
 
 	private static ArrayList<int[]> findAdjCells(int row, int col, int[][] board) {
-		ArrayList<int[]> adjCells = new ArrayList<> ();
+		ArrayList<int[]> adjCells = new ArrayList<> (4);
 		int cellValue = board[row][col];
-		if (isInBounds ( row + cellValue, col, board ))
-			adjCells.add ( new int[] {row + cellValue, col} );
-		if (isInBounds ( row - cellValue,  col, board ))
-			adjCells.add ( new int[] {row - cellValue, col} );
-		if (isInBounds ( row, col + cellValue, board ))
-			adjCells.add ( new int[] {row, col + cellValue} );
-		if (isInBounds ( row, col - cellValue, board ))
-			adjCells.add ( new int[] {row, col - cellValue} );
+		if (cellValue != 0) {
+			if (isInBounds ( row + cellValue, col, board ))
+				adjCells.add ( new int[] {row + cellValue, col} );
+			if (isInBounds ( row, col + cellValue, board ))
+				adjCells.add ( new int[] {row, col + cellValue} );
+			if (isInBounds ( row - cellValue,  col, board ))
+				adjCells.add ( new int[] {row - cellValue, col} );
+			if (isInBounds ( row, col - cellValue, board ))
+				adjCells.add ( new int[] {row, col - cellValue} );
+		}
 		return adjCells;
 	}
 
 	private static boolean isInBounds(int row, int col, int[][] board) {
-		return row >= 0 && row < board.length && col >= 0 && col < board[0].length;
+		if (row >= 0 && row < board.length && col >= 0 && col < board[0].length)
+			if (row == board.length - 1 && col == board[0].length - 1)
+				return true;
+			else return board[row][col] != 0;
+		return false;
 	}
 
 	public void test(String filename) throws FileNotFoundException{
