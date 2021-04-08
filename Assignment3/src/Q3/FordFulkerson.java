@@ -37,7 +37,7 @@ public class FordFulkerson {
 
 			/* since we are not provided an adj list, we search
 			 through all edges to find edges of the source node */
-			if (u != source)
+			if (u != source || edge.weight <= 0)
 				continue;
 
 			// check is node has been previously discovered

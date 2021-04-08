@@ -3,50 +3,67 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Honors {
-	
+
+	private static class Tile {
+		public int x, y;
+		public Tile ( int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public boolean equals ( Object o ) {
+			if (this == o) return true;
+			if (!(o instanceof Tile)) return false;
+			Tile tile = (Tile) o;
+			return x == tile.x && y == tile.y;
+		}
+
+		@Override
+		public int hashCode () {
+			return Objects.hash ( x, y );
+		}
+	}
+
 	public static int min_moves(int[][] board) {
 		// moves array to keep track of minimum distances to each cell
 		int[][] moves = new int[board.length][board[0].length];
 
 		// store the indexes of the nodes and add the source node (top left corner)
-		Queue<Integer> nextNodes = new ArrayDeque<> ();
-		nextNodes.add ( 0 );
-		nextNodes.add ( 0 );
+		Queue<Tile> nextNodes = new ArrayDeque<> ();
+		nextNodes.add ( new Tile ( 0, 0 ) );
 
 		while (!nextNodes.isEmpty ()) {
-			int currRow = nextNodes.poll ();
-			int currCol = nextNodes.poll ();
+			Tile curr = nextNodes.poll ();
 
+			ArrayList<Tile> adjCells = findAdjCells ( curr.x, curr.y, board );
+			for (Tile adjCell : adjCells ) {
+				int adjRow = adjCell.x;
+				int adjCol = adjCell.y;
 
-			ArrayList<int[]> adjCells = findAdjCells ( currRow, currCol, board );
-			for (int[] adjCell : adjCells ) {
-				int adjRow = adjCell[0];
-				int adjCol = adjCell[1];
-
-				if (moves[adjRow][adjCol] == 0 || moves[adjRow][adjCol] > moves[currRow][currCol] + 1) {
-					moves[adjRow][adjCol] = moves[currRow][currCol] + 1;
+				if (moves[adjRow][adjCol] == 0 || moves[adjRow][adjCol] > moves[curr.x][curr.y] + 1) {
+					moves[adjRow][adjCol] = moves[curr.x][curr.y] + 1;
 					if (adjRow == board.length - 1 && adjCol == board[0].length - 1 )
 						return moves[adjRow][adjCol];
-					nextNodes.add ( adjRow );
-					nextNodes.add ( adjCol );
+					nextNodes.add ( adjCell );
 				}
 			}
 		}
 		return -1;
 	}
 
-	private static ArrayList<int[]> findAdjCells(int row, int col, int[][] board) {
-		ArrayList<int[]> adjCells = new ArrayList<> (4);
+	private static ArrayList<Tile> findAdjCells( int row, int col, int[][] board) {
+		ArrayList<Tile> adjCells = new ArrayList<> (4);
 		int cellValue = board[row][col];
 		if (cellValue != 0) {
 			if (isInBounds ( row + cellValue, col, board ))
-				adjCells.add ( new int[] {row + cellValue, col} );
+				adjCells.add ( new Tile ( row + cellValue, col ) );
 			if (isInBounds ( row, col + cellValue, board ))
-				adjCells.add ( new int[] {row, col + cellValue} );
+				adjCells.add ( new Tile ( row, col + cellValue) );
 			if (isInBounds ( row - cellValue,  col, board ))
-				adjCells.add ( new int[] {row - cellValue, col} );
+				adjCells.add ( new Tile (row - cellValue, col) );
 			if (isInBounds ( row, col - cellValue, board ))
-				adjCells.add ( new int[] {row, col - cellValue} );
+				adjCells.add ( new Tile (row, col - cellValue) );
 		}
 		return adjCells;
 	}
