@@ -1,2 +1,7 @@
-*.in linguist-vendored=true
-*.out linguist-vendored=true
+Assignment3/src/Q2/02.in.2 linguist-vendored
+Assignment3/src/Q2/01.in.2 linguist-vendored
+Assignment2/src/DP/test.out.1 linguist-vendored
+Assignment2/src/DP/test.out.1 linguist-vendored
+Assignment2/src/DP/test.in.1 linguist-vendored
+Assignment2/HW2_testCaseInfo linguist-vendored
+Assignment2/HW2_testCaseInfo/ linguist-vendored
