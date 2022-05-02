@@ -9,6 +9,7 @@ Chaining and Open addressing hash table implementation + solving a real-world pr
 * Complete search algorithm for solving a modified version of the Sudoku game. 
 * Dynamic programming solution to a seating problem. 
 * Greedy algorithm for homework planning 
+
 [Source](https://github.com/YazdanZ/McGill-COMP251-Assignments/tree/master/Assignment2/src)
 
 ## Assignment 3 
